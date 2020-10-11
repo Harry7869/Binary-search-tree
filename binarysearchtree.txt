@@ -1,0 +1,152 @@
+// C++ program for the above approach 
+
+#include <bits/stdc++.h> 
+using namespace std; 
+
+// Structure of a BST node 
+struct node { 
+	int data; 
+	struct node* left; 
+	struct node* right; 
+}; 
+
+// Utility function to create a new BST node 
+struct node* newnode(int d) 
+{ 
+	struct node* temp 
+		= (struct node*)malloc(sizeof(struct node)); 
+	temp->left = NULL; 
+	temp->right = NULL; 
+	temp->data = d; 
+	return temp; 
+} 
+
+// Function to print the nodes of a 
+// BST in Top Level Order and Reversed 
+// Bottom Level Order alternatively 
+void printBST(node* root) 
+{ 
+	// Stores the nodes in descending order 
+	// of the level and node values 
+	priority_queue<pair<int, int> > great; 
+
+	// Stores the nodes in ascending order 
+	// of the level and node values 
+
+	priority_queue<pair<int, int>, 
+				vector<pair<int, int> >, 
+				greater<pair<int, int> > > 
+		small; 
+
+	// Initialize a stack for 
+	// level order traversal 
+	stack<pair<node*, int> > st; 
+
+	// Push the root of BST 
+	// into the stack 
+	st.push({ root, 1 }); 
+
+	// Perform Level Order Traversal 
+	while (!st.empty()) { 
+
+		// Extract and pop the node 
+		// from the current level 
+		node* curr = st.top().first; 
+
+		// Stores level of current node 
+		int level = st.top().second; 
+		st.pop(); 
+
+		// Store in the priority queues 
+		great.push({ level, curr->data }); 
+		small.push({ level, curr->data }); 
+
+		// Traverse left subtree 
+		if (curr->left) 
+			st.push({ curr->left, level + 1 }); 
+
+		// Traverse right subtree 
+		if (curr->right) 
+			st.push({ curr->right, level + 1 }); 
+	} 
+
+	// Stores the levels that are printed 
+	unordered_set<int> levelsprinted; 
+
+	// Print the nodes in the required manner 
+	while (!small.empty() && !great.empty()) { 
+
+		// Store the top level of traversal 
+		int toplevel = small.top().first; 
+
+		// If the level is already printed 
+		if (levelsprinted.find(toplevel) 
+			!= levelsprinted.end()) 
+			break; 
+
+		// Otherwise 
+		else
+			levelsprinted.insert(toplevel); 
+
+		// Print nodes of same level 
+		while (!small.empty() 
+			&& small.top().first == toplevel) { 
+			cout << small.top().second << " "; 
+			small.pop(); 
+		} 
+
+		// Store the bottom level of traversal 
+		int bottomlevel = great.top().first; 
+
+		// If the level is already printed 
+		if (levelsprinted.find(bottomlevel) 
+			!= levelsprinted.end()) { 
+			break; 
+		} 
+		else { 
+			levelsprinted.insert(bottomlevel); 
+		} 
+
+		// Print the nodes of same level 
+		while (!great.empty() 
+			&& great.top().first == bottomlevel) { 
+			cout << great.top().second << " "; 
+			great.pop(); 
+		} 
+	} 
+} 
+
+// Driver Code 
+int main() 
+{ 
+	/* 
+	Given BST 
+
+								25 
+							/	 \ 
+							20	 36 
+						/ \	 / \ 
+						10 22 30 40 
+						/ \	 / / \ 
+						5 12 28 38 48 
+	*/
+
+	// Creating the BST 
+	node* root = newnode(25); 
+	root->left = newnode(20); 
+	root->right = newnode(36); 
+	root->left->left = newnode(10); 
+	root->left->right = newnode(22); 
+	root->left->left->left = newnode(5); 
+	root->left->left->right = newnode(12); 
+	root->right->left = newnode(30); 
+	root->right->right = newnode(40); 
+	root->right->left->left = newnode(28); 
+	root->right->right->left = newnode(38); 
+	root->right->right->right = newnode(48); 
+
+	// Function Call 
+	printBST(root); 
+
+	return 0; 
+}
